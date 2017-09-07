@@ -34,15 +34,18 @@ module OmniAuth
 
       def get_user_data
 
+        parse_site = options[:parse_site] || PARSE_LOGIN[:site]
+        parse_path = options[:parse_path] || PARSE_LOGIN[:path]
+
         raise "application_id is required for initialization" unless options[:application_id]
         raise "rest_api_key is required for initialization"   unless options[:rest_api_key]
 
-        conn = Faraday.new(:url => PARSE_LOGIN[:site]) do |req|
+        conn = Faraday.new(:url => parse_site) do |req|
           req.request :url_encoded
           req.adapter  Faraday.default_adapter
         end
         result = conn.get do |req|
-          req.url PARSE_LOGIN[:path]
+          req.url parse_path
           req.headers['X-Parse-Application-Id'] = options[:application_id]
           req.headers['X-Parse-REST-API-Key']   = options[:rest_api_key]
           req.params['username']                = request.params["username"]
